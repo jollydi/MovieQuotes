@@ -6,7 +6,12 @@
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_clear"
+        android:title="@string/clear"
+        android:orderInCategory="90"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/action_increase_size"
         android:title="@string/increase_font_size"

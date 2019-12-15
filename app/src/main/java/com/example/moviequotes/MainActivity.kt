@@ -3,6 +3,7 @@ package com.example.moviequotes
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Layout
 import android.util.Log
 import android.view.LayoutInflater
 import com.google.android.material.snackbar.Snackbar
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -25,7 +27,6 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             Log.d(Constants.TAG, "You want a quote")
-//            updateQuote(MovieQuote("Everything Is Awesome!", "The LEGO Movie"))
             showAddDialog()
         }
     }
@@ -42,6 +43,17 @@ class MainActivity : AppCompatActivity() {
             val quote = view.quote_edit_text.text.toString()
             val movie = view.movie_edit_text.text.toString()
             updateQuote(MovieQuote(quote, movie))
+        }
+        builder.setNegativeButton(android.R.string.cancel, null)
+        builder.create().show()
+    }
+
+    private fun showDeleteDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.dialogDeleteTitle)
+        builder.setMessage(getString(R.string.confirm_delete_message))
+        builder.setPositiveButton(android.R.string.ok) {_, _ ->
+            updateQuote(MovieQuote(getString(R.string.defaultQuote), getString(R.string.defaultMovie)))
         }
         builder.setNegativeButton(android.R.string.cancel, null)
         builder.create().show()
@@ -64,8 +76,7 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> {
-//                startActivity(Intent(Settings.ACTION_SETTINGS))
-//                getWhichSettings()
+                getWhichSettings()
                 true
             }
             R.id.action_increase_size -> {
@@ -76,8 +87,26 @@ class MainActivity : AppCompatActivity() {
                 changeSize(-4)
                 true
             }
+            R.id.action_clear -> {
+                showDeleteDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun getWhichSettings() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Which settings?")
+        builder.setItems(R.array.settings_types) {_, index ->
+            val settingsType = when (index) {
+                0 -> Settings.ACTION_SOUND_SETTINGS
+                1 -> Settings.ACTION_SEARCH_SETTINGS
+                else -> Settings.ACTION_SETTINGS
+            }
+            startActivity(Intent(settingsType))
+        }
+        builder.create().show()
     }
 //
 //    private fun getWhichSettings() {
