@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -20,6 +21,8 @@ import kotlinx.android.synthetic.main.dialog_add.view.*
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var adapter: MovieQuoteAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,41 +30,25 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             Log.d(Constants.TAG, "You want a quote")
-            showAddDialog()
+            adapter.showAddDialog()
         }
-    }
 
-    private fun showAddDialog() {
-        val builder = AlertDialog.Builder(this)
-        // Set options on builder
-        builder.setTitle(R.string.dialogTitle)
+        adapter = MovieQuoteAdapter(this)
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.setHasFixedSize(true)
+        recycler_view.adapter = adapter
 
-        // Content is a message, view, or a list of items
-        val view = LayoutInflater.from(this).inflate(R.layout.dialog_add, null, false)
-        builder.setView(view)
-        builder.setPositiveButton(android.R.string.ok) {_, _ ->
-            val quote = view.quote_edit_text.text.toString()
-            val movie = view.movie_edit_text.text.toString()
-            updateQuote(MovieQuote(quote, movie))
-        }
-        builder.setNegativeButton(android.R.string.cancel, null)
-        builder.create().show()
     }
 
     private fun showDeleteDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.dialogDeleteTitle)
-        builder.setMessage(getString(R.string.confirm_delete_message))
-        builder.setPositiveButton(android.R.string.ok) {_, _ ->
-            updateQuote(MovieQuote(getString(R.string.defaultQuote), getString(R.string.defaultMovie)))
-        }
-        builder.setNegativeButton(android.R.string.cancel, null)
-        builder.create().show()
-    }
-
-    private fun updateQuote(movieQuote: MovieQuote) {
-        quote_text_view.text = movieQuote.quote
-        movie_text_view.text = movieQuote.movie
+//        val builder = AlertDialog.Builder(this)
+//        builder.setTitle(R.string.dialogDeleteTitle)
+//        builder.setMessage(getString(R.string.confirm_delete_message))
+//        builder.setPositiveButton(android.R.string.ok) {_, _ ->
+//            updateQuote(MovieQuote(getString(R.string.defaultQuote), getString(R.string.defaultMovie)))
+//        }
+//        builder.setNegativeButton(android.R.string.cancel, null)
+//        builder.create().show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -114,9 +101,9 @@ class MainActivity : AppCompatActivity() {
 //    }
 
     private fun changeSize(delta: Int) {
-        var currentSize = quote_text_view.textSize / resources.displayMetrics.scaledDensity
-        currentSize += delta
-        quote_text_view.textSize = currentSize
-        movie_text_view.textSize = currentSize
+//        var currentSize = quote_text_view.textSize / resources.displayMetrics.scaledDensity
+//        currentSize += delta
+//        quote_text_view.textSize = currentSize
+//        movie_text_view.textSize = currentSize
     }
 }
