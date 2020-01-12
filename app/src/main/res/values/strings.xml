@@ -14,6 +14,9 @@
     <string name="confirm_delete">Confirm delete</string>
     <string name="confirm_delete_message">Are you sure you want to delete this quote?</string>
     <string name="delete">Delete</string>
+    <string name="get_favorite_movie">Get Favorite Movie</string>
+    <string name="get_favorite_quote">Get Favorite Quote</string>
+    <string name="get_all_quotes">Get All Quotes</string>
     <string-array name="settings_types">
         <item>Sound</item>
         <item>Search</item>

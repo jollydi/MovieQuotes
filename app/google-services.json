@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "950440228144",
+    "firebase_url": "https://isaiah-moviequotes.firebaseio.com",
+    "project_id": "isaiah-moviequotes",
+    "storage_bucket": "isaiah-moviequotes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950440228144:android:a42a495106ebba63f184f5",
+        "android_client_info": {
+          "package_name": "com.example.moviequotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950440228144-ufnb7hjp6hutprhvononua6ctevspg4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnBdl9kbySXJ1Ms10PPbpykFAQHqEnVE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950440228144-ufnb7hjp6hutprhvononua6ctevspg4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

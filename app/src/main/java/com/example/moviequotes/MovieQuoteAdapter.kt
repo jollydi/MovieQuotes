@@ -6,11 +6,26 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.dialog_add.view.*
 
 class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteViewHolder>() {
 
     private val movieQuotes = ArrayList<MovieQuote>()
+
+    private val quotesRef = FirebaseFirestore
+            .getInstance()
+            .collection(Constants.QUOTES_COLLECTION)
+
+    init {
+        quotesRef.addSnapshotListener {snapshot, exception ->
+            movieQuotes.clear()
+            for (doc in snapshot!!) {
+                movieQuotes.add(MovieQuote.fromSnapshot(doc))
+            }
+            notifyDataSetChanged()
+        }
+    }
 
     override fun getItemCount() = movieQuotes.size
 
@@ -24,9 +39,11 @@ class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteV
         viewHolder.bind(movieQuotes[index])
     }
 
-    private fun add(movieQuote: MovieQuote) {
+    fun add(movieQuote: MovieQuote) {
         movieQuotes.add(0, movieQuote)
         notifyItemInserted(0)
+
+//        quotesRef.add(movieQuote)
     }
 
     private fun remove(index: Int) {

@@ -24,4 +24,16 @@
         android:orderInCategory="60"
         app:showAsAction="ifRoom"
         android:icon="@android:drawable/arrow_down_float"/>
+    <item
+        android:id="@+id/action_get_movie"
+        android:title="@string/get_favorite_movie"
+        android:orderInCategory="10"/>
+    <item
+        android:id="@+id/action_get_quote"
+        android:title="@string/get_favorite_quote"
+        android:orderInCategory="20"/>
+    <item
+        android:id="@+id/action_get_all_quotes"
+        android:title="@string/get_all_quotes"
+        android:orderInCategory="30"/>
 </menu>

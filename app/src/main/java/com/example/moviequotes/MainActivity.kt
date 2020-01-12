@@ -10,9 +10,11 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.firestore.FirebaseFirestore
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -78,14 +80,62 @@ class MainActivity : AppCompatActivity() {
                 showDeleteDialog()
                 true
             }
+            R.id.action_get_movie -> {
+                getFavoriteMovie()
+                true
+            }
+            R.id.action_get_quote -> {
+                getFavoriteQuote()
+                true
+            }
+            R.id.action_get_all_quotes -> {
+                getAllQuotes()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun getAllQuotes() {
+        val quoteRef = FirebaseFirestore
+            .getInstance()
+            .collection("quotes")
+        quoteRef.get().addOnSuccessListener {
+            for (doc in it) {
+                val mq = doc.toObject(MovieQuote::class.java)
+                adapter.add(mq)
+            }
+        }
+    }
+
+    private fun getFavoriteQuote() {
+        val favoriteQuoteRef = FirebaseFirestore
+            .getInstance()
+            .collection("favorites")
+            .document("moviequote")
+        favoriteQuoteRef.get().addOnSuccessListener {
+            val mq = it.toObject(MovieQuote::class.java)
+            if (mq != null) {
+                adapter.add(mq)
+            }
+        }
+    }
+
+    private fun getFavoriteMovie() {
+        val favoriteQuoteRef = FirebaseFirestore
+            .getInstance()
+            .collection("favorites")
+            .document("moviequote")
+        favoriteQuoteRef.get().addOnSuccessListener {
+            val movie = (it["movie"] ?: "") as String
+            Toast.makeText(this, movie, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun getWhichSettings() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Which settings?")
-        builder.setItems(R.array.settings_types) {_, index ->
+        builder.setItems(R.array.settings_types) { _, index ->
             val settingsType = when (index) {
                 0 -> Settings.ACTION_SOUND_SETTINGS
                 1 -> Settings.ACTION_SEARCH_SETTINGS
