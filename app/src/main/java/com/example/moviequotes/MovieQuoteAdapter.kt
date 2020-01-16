@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.dialog_add.view.*
 
 class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteViewHolder>() {
@@ -14,17 +16,37 @@ class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteV
     private val movieQuotes = ArrayList<MovieQuote>()
 
     private val quotesRef = FirebaseFirestore
-            .getInstance()
-            .collection(Constants.QUOTES_COLLECTION)
+        .getInstance()
+        .collection(Constants.QUOTES_COLLECTION)
 
     init {
-        quotesRef.addSnapshotListener {snapshot, exception ->
-            movieQuotes.clear()
-            for (doc in snapshot!!) {
-                movieQuotes.add(MovieQuote.fromSnapshot(doc))
+        quotesRef
+            .orderBy(MovieQuote.LAST_TOUCHED_KEY, Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e(Constants.TAG, "Listen error: $exception")
+                    return@addSnapshotListener
+                }
+                for (docChange in snapshot!!.documentChanges) {
+                    val mq = MovieQuote.fromSnapshot(docChange.document)
+                    when (docChange.type) {
+                        DocumentChange.Type.ADDED -> {
+                            movieQuotes.add(0, mq)
+                            notifyItemInserted(0)
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            val pos = movieQuotes.indexOfFirst { mq.id == it.id }
+                            movieQuotes.removeAt(pos)
+                            notifyItemRemoved(pos)
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            val pos = movieQuotes.indexOfFirst { mq.id == it.id }
+                            movieQuotes[pos] = mq
+                            notifyItemChanged(pos)
+                        }
+                    }
+                }
             }
-            notifyDataSetChanged()
-        }
     }
 
     override fun getItemCount() = movieQuotes.size
@@ -40,21 +62,17 @@ class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteV
     }
 
     fun add(movieQuote: MovieQuote) {
-        movieQuotes.add(0, movieQuote)
-        notifyItemInserted(0)
-
-//        quotesRef.add(movieQuote)
+        quotesRef.add(movieQuote)
     }
 
     private fun remove(index: Int) {
-        movieQuotes.removeAt(index)
-        notifyItemRemoved(index)
+        quotesRef.document(movieQuotes[index].id).delete()
     }
 
     private fun edit(position: Int, quote: String, movie: String) {
         movieQuotes[position].quote = quote
         movieQuotes[position].movie = movie
-        notifyItemChanged(position)
+        quotesRef.document(movieQuotes[position].id).set(movieQuotes[position])
     }
 
     fun showAddDialog(position: Int = -1) {
@@ -74,7 +92,7 @@ class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteV
             view.movie_edit_text.setText(movieQuotes[position].movie)
         }
 
-        builder.setPositiveButton(android.R.string.ok) {_, _ ->
+        builder.setPositiveButton(android.R.string.ok) { _, _ ->
             val quote = view.quote_edit_text.text.toString()
             val movie = view.movie_edit_text.text.toString()
             if (position >= 0) {
@@ -92,6 +110,6 @@ class MovieQuoteAdapter(var context: Context) : RecyclerView.Adapter<MovieQuoteV
 
     fun selectMovieQuote(position: Int) {
         movieQuotes[position].isSelected = !movieQuotes[position].isSelected
-        notifyItemChanged(position)
+        quotesRef.document(movieQuotes[position].id).set(movieQuotes[position])
     }
 }
